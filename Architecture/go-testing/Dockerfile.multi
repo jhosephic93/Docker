@@ -1,0 +1,14 @@
+FROM --platform=$BUILDPLATFORM golang:alpine AS builder
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+WORKDIR /app
+COPY ./ /app/
+RUN echo "En $BUILDPLATFORM, building $TARGETPLATFORM" > /log.txt
+RUN go build main.go
+#CMD ["/app/main"]
+
+
+FROM scratch
+COPY --from=builder /app/main /main
+COPY --from=builder /log.txt /log.txt
+CMD ["/main"]
